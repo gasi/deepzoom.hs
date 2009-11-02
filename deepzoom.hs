@@ -23,7 +23,7 @@ columns (Rectangle (left, _, right, _)) _ _
 columns (Rectangle (left, top, right, bottom)) size overlap = [firstBounds] ++ (columns secondBounds size overlap)
     where firstLeft    = max 0 (left - overlap)
           firstRight   = min right (left + size + overlap)
-          secondLeft   = firstRight
+          secondLeft   = min right (left + size)
           secondRight  = right
           firstBounds  = Rectangle (firstLeft, top, firstRight, bottom)
           secondBounds = Rectangle (secondLeft, top, secondRight, bottom)
@@ -35,7 +35,7 @@ rows (Rectangle (_, top, _, bottom)) _ _
 rows (Rectangle (left, top, right, bottom)) size overlap = [firstBounds] ++ (rows secondBounds size overlap)
   where firstTop     = max 0 (top - overlap)
         firstBottom  = min bottom (top + size + overlap)
-        secondTop    = firstBottom
+        secondTop    = min bottom (top + size)
         secondBottom = bottom
         firstBounds  = Rectangle (left, firstTop, right, firstBottom)
         secondBounds = Rectangle (left, secondTop, right, secondBottom)
@@ -66,4 +66,4 @@ main = do
     putStrLn "Done."
         where input = Rectangle (0, 0, 600, 500)
               tileSize = 254
-              tileOverlap = 1
+              tileOverlap = 3
