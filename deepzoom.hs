@@ -70,9 +70,10 @@ descriptorXML width height tileSize tileOverlap tileFormat =
     
 
 pyramid :: Rectangle -> Int -> Int -> [(Int, Rectangle, [Rectangle])]
-pyramid bounds tileSize tileOverlap = zip3 [0..numLevels-1] levelBounds tileBounds
-    where levelBounds = levels (Rectangle (0, 0, right bounds, bottom bounds))
-          numLevels = length levelBounds
+pyramid bounds tileSize tileOverlap = zip3 (reverse [0..maxLevel]) levelBounds tileBounds
+    where numLevels = length levelBounds
+          maxLevel = numLevels - 1
+          levelBounds = levels (Rectangle (0, 0, right bounds, bottom bounds))
           tileBounds = map (\x -> tiles x tileSize tileOverlap) levelBounds
 
 
@@ -89,6 +90,11 @@ createPath path = do
         then createDirectory path
         else return ()
 
+level (l, _, _) = l
+
+sequence_ :: [IO ()] -> IO ()
+sequence_ =  foldr (>>) (return ())
+
 -- Main
 main = do
     -- Load image
@@ -96,7 +102,10 @@ main = do
     (width, height) <- imageSize image
     -- Create tiles folder
     createPath tilesPath
-    putStrLn $ show $ pyramid (Rectangle (0, 0, width, height)) tileSize tileOverlap
+    let p = (pyramid (Rectangle (0, 0, width, height)) tileSize tileOverlap) in
+        sequence (map (\x -> (createPath (tilesPath ++ "/" ++ (show (level x))))) p)
+        --image <- resizeImage (right snd head p) (bottom snd head p) image
+        --saveJpegFile 95 (tilesPath ++ (show fst p)) image
     -- Write descriptor
     --writeFile descriptorFileName (descriptorXML width height tileSize tileOverlap tileFormat)
     putStrLn "Done."
