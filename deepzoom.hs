@@ -6,8 +6,12 @@ data Rectangle = Rectangle (Int, Int, Int, Int)
                  deriving (Eq, Show)
 
 tiles :: Rectangle -> Int -> Int -> [Rectangle]
-tiles bounds size overlap = cls
-    where cls = columns bounds size overlap
+tiles bounds size overlap = r cs size overlap
+    where cs = columns bounds size overlap
+          
+r :: [Rectangle] -> Int -> Int -> [Rectangle]
+r [] _ _ = []
+r (c:cs) size overlap = rows c size overlap ++ r cs size overlap
 
 columns :: Rectangle -> Int -> Int -> [Rectangle]
 columns (Rectangle (left, _, right, _)) _ _
@@ -65,6 +69,6 @@ main = do
     --putStrLn $ show $ levels input
     putStrLn $ show $ tiles input tileSize tileOverlap
     putStrLn "Done."
-        where input = Rectangle (0, 0, 1231, 2268)
+        where input = Rectangle (0, 0, 10000, 10000)
               tileSize = 254
               tileOverlap = 1
