@@ -62,7 +62,8 @@ getTop :: Rectangle -> Int
 getTop (Rectangle (_, y, _, _)) = y
 
 main = do
-    --putStrLn $ show $ levels input
+    image_file <- loadJpegFile "test.jpg"
+    putStrLn $ show $ imageSize image
     putStrLn $ show $ {-length $-} flatten $ map levels (tiles input tileSize tileOverlap)
     putStrLn "Done."
         where input = Rectangle (0, 0, 600, 500)
