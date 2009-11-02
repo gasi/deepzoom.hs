@@ -60,13 +60,21 @@ rows (Rectangle (left, top, right, bottom)) size overlap = [firstBounds] ++ (row
         firstBounds  = Rectangle (left, firstTop, right, firstBottom)
         secondBounds = Rectangle (left, secondTop, right, secondBottom)
 
--- Create Deep Zoom XML manifest
+-- Deep Zoom XML manifest
 descriptorXML :: Int -> Int -> Int -> Int -> String -> String
 descriptorXML width height tileSize tileOverlap tileFormat = 
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\
     \<Image Format=\"" ++ tileFormat ++ "\" Overlap=\"" ++ show tileOverlap ++ "\" TileSize=\"" ++ show tileSize ++ "\" xmlns=\"http://schemas.microsoft.com/deepzoom/2008\">\
     \<Size Height=\"" ++ show height ++ "\" Width=\"" ++ show width ++ "\"/>\
     \</Image>"
+    
+
+pyramid :: Rectangle -> Int -> Int -> [(Int, Rectangle, [Rectangle])]
+pyramid bounds tileSize tileOverlap = zip3 [0..numLevels-1] levelBounds tileBounds
+    where levelBounds = levels (Rectangle (0, 0, right bounds, bottom bounds))
+          numLevels = length levelBounds
+          tileBounds = map (\x -> tiles x tileSize tileOverlap) levelBounds
+
 
 -- List helper
 flatten :: [[a]] -> [a]
@@ -88,8 +96,7 @@ main = do
     (width, height) <- imageSize image
     -- Create tiles folder
     createPath tilesPath
-    let numLevels = length $ levels (Rectangle (0, 0, width, height)) in
-        putStrLn $ show [1..numLevels]
+    putStrLn $ show $ pyramid (Rectangle (0, 0, width, height)) tileSize tileOverlap
     -- Write descriptor
     --writeFile descriptorFileName (descriptorXML width height tileSize tileOverlap tileFormat)
     putStrLn "Done."
