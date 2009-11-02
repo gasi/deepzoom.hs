@@ -1,57 +1,70 @@
 import Graphics.GD
 import Data.Char
 
+-- Rectangle (left, top, right, bottom)
 data Rectangle = Rectangle (Int, Int, Int, Int)
                  deriving (Eq, Show)
 
-tileBounds :: Rectangle -> Int -> Int -> [Rectangle]
-tileBounds (Rectangle (0, 0, 1, 1)) _ _ = []
-{-
-    tileBounds bounds tileSize tileOverlap = 
-    [Rectangle (tileSize + getX bounds, tile ]
--}
+tiles :: Rectangle -> Int -> Int -> [Rectangle]
+tiles bounds size overlap = cls
+    where cls = columns bounds size overlap
 
-numLevels :: Rectangle -> Int
-numLevels bounds = ceiling $ logBase 2 (fromIntegral (max width height))
-    where (width, height) = (getWidth bounds, getHeight bounds)
+columns :: Rectangle -> Int -> Int -> [Rectangle]
+columns (Rectangle (left, _, right, _)) _ _
+    | width <= 0 = []
+    where width = right - left
+columns bounds size overlap = [firstBounds] ++ (columns secondBounds size overlap)
+    where firstLeft    = max 0 (left - overlap)
+          firstRight   = min right (left + size + overlap)
+          secondLeft   = firstRight
+          secondRight  = right
+          left         = getLeft bounds
+          top          = getTop bounds
+          right        = getRight bounds
+          bottom       = getBottom bounds
+          firstBounds  = Rectangle (firstLeft, top, firstRight, bottom)
+          secondBounds = Rectangle (secondLeft, top, secondRight, bottom)
+
+rows :: Rectangle -> Int -> Int -> [Rectangle]
+rows (Rectangle (_, top, _, bottom)) _ _
+  | height <= 0 = []
+  where height = bottom - top
+rows bounds size overlap = [firstBounds] ++ (columns secondBounds size overlap)
+  where firstTop     = max 0 (top - overlap)
+        firstBottom  = min bottom (top + size + overlap)
+        secondTop    = firstBottom
+        secondBottom = bottom
+        left         = getLeft bounds
+        top          = getTop bounds
+        right        = getRight bounds
+        bottom       = getBottom bounds
+        firstBounds  = Rectangle (left, firstTop, right, firstBottom)
+        secondBounds = Rectangle (left, secondTop, right, secondBottom)
 
 levels :: Rectangle -> [Rectangle]
 levels (Rectangle (0, 0, 1, 1)) = [Rectangle (0, 0, 1, 1)]
 levels bounds = [bounds] ++ (levels (Rectangle (0, 0, newWidth, newHeight)))
     where newWidth = ceiling $ (fromIntegral width) / 2
           newHeight = ceiling $ (fromIntegral height) / 2
-          width = getWidth bounds
-          height = getHeight bounds
+          width = getRight bounds
+          height = getBottom bounds
 
-numColumns :: Rectangle -> Int -> Int
-numColumns bounds tileSize = ceiling $ fromIntegral width / fromIntegral tileSize
-    where width = getWidth bounds
+getRight :: Rectangle -> Int
+getRight (Rectangle (_, _, width, _)) = width
 
-getWidth :: Rectangle -> Int
-getWidth (Rectangle (_, _, width, _)) = width
+getBottom :: Rectangle -> Int
+getBottom (Rectangle (_, _, _, height)) = height
 
-getHeight :: Rectangle -> Int
-getHeight (Rectangle (_, _, _, height)) = height
+getLeft :: Rectangle -> Int
+getLeft (Rectangle (x, _, _, _)) = x
 
-getX :: Rectangle -> Int
-getX (Rectangle (x, _, _, _)) = x
-
-getY :: Rectangle -> Int
-getY (Rectangle (_, y, _, _)) = y
+getTop :: Rectangle -> Int
+getTop (Rectangle (_, y, _, _)) = y
 
 main = do
-    --image_file <- loadJpegFile "auschwitz.jpg"
-    --(w, h) <- imageSize image_file
-    --(inWidth, inHeight) <- imageSize image
-    --image <- resizeImage outWidth outHeight image
-    --    where outWidth = ceiling (inWidth / 2)
-    --          outHeight = ceiling (inHeight / 2)
-    --saveJpegFile 95 "hell.jpg" image
-    --putStrLn $ show (w, h)
---    putStrLn $ show $ tileBounds (Rectangle (0, 0, 1000, 1000)) 254 1
-    putStrLn $ show $ numColumns input 254
-    putStrLn $ show $ numLevels input
-    putStrLn $ show $ levels input
+    --putStrLn $ show $ levels input
+    putStrLn $ show $ tiles input tileSize tileOverlap
     putStrLn "Done."
-		where input = Rectangle (0, 0, 1024, 768)
-    
+        where input = Rectangle (0, 0, 1231, 2268)
+              tileSize = 254
+              tileOverlap = 1
