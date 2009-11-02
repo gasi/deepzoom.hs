@@ -12,6 +12,7 @@ tiles :: Rectangle -> Int -> Int -> [Rectangle]
 tiles bounds size overlap = flatten (map (\x -> rows x size overlap) cs)
     where cs = columns bounds size overlap
 
+-- Helper
 flatten :: [[a]] -> [a]
 flatten [] = []
 flatten (y:ys) = y ++ (flatten ys)
@@ -62,7 +63,7 @@ getTop (Rectangle (_, y, _, _)) = y
 
 main = do
     --putStrLn $ show $ levels input
-    putStrLn $ show $ {-length $-} tiles input tileSize tileOverlap
+    putStrLn $ show $ {-length $-} flatten $ map levels (tiles input tileSize tileOverlap)
     putStrLn "Done."
         where input = Rectangle (0, 0, 600, 500)
               tileSize = 254
