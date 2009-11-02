@@ -1,5 +1,7 @@
 import Graphics.GD
-import Data.Char
+import System.Directory
+import System.FilePath
+import System.IO
 
 -- Rectangle (left, top, right, bottom)
 data Rectangle = Rectangle (Int, Int, Int, Int)
@@ -61,11 +63,36 @@ getLeft (Rectangle (x, _, _, _)) = x
 getTop :: Rectangle -> Int
 getTop (Rectangle (_, y, _, _)) = y
 
+-- Create path if does not exist
+createPath :: String -> IO ()
+createPath path = do
+    result <- doesDirectoryExist path
+    if not result
+        then createDirectory path
+        else return ()
+
+descriptorXML :: Int -> Int -> Int -> Int -> String -> String
+descriptorXML width height tileSize tileOverlap tileFormat = 
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" ++
+    "<Image Format=\"" ++ tileFormat ++ "\" Overlap=\"" ++ show tileOverlap ++ "\" TileSize=\"" ++ show tileSize ++ "\" xmlns=\"http://schemas.microsoft.com/deepzoom/2008\">" ++
+    "<Size Height=\"" ++ show height ++ "\" Width=\"" ++ show width ++ "\"/>" ++ 
+    "</Image>"
+
 main = do
-    image_file <- loadJpegFile "test.jpg"
-    putStrLn $ show $ imageSize image
-    putStrLn $ show $ {-length $-} flatten $ map levels (tiles input tileSize tileOverlap)
+    image <- loadJpegFile input
+    (width, height) <- imageSize image
+    createPath tilesPath
+    writeFile descriptorFileName (descriptorXML width height tileSize tileOverlap tileFormat)
+    --(width, height) <- imageSize image
+    --image <- (resizeImage 2 2 image)
+    --saveJpegFile 95 "test_files/0/0_0.jpg" image --1 "out.jpg" image
+    --putStrLn $ show $ (width, height)
+    --putStrLn $ show $ {-length $-} flatten $ map levels (tiles input tileSize tileOverlap)
     putStrLn "Done."
-        where input = Rectangle (0, 0, 600, 500)
-              tileSize = 254
+        where tileSize = 254
               tileOverlap = 3
+              tileFormat = "jpg"
+              input = "test.jpg"
+              baseName = dropExtension input
+              tilesPath = baseName ++ "_files"
+              descriptorFileName = addExtension baseName "dzi"
