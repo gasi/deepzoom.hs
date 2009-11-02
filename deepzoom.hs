@@ -91,6 +91,7 @@ createPath path = do
         else return ()
 
 level (l, _, _) = l
+levelBounds (_, b, _) = b
 
 sequence_ :: [IO ()] -> IO ()
 sequence_ =  foldr (>>) (return ())
@@ -103,9 +104,9 @@ main = do
     -- Create tiles folder
     createPath tilesPath
     let p = (pyramid (Rectangle (0, 0, width, height)) tileSize tileOverlap) in
-        sequence (map (\x -> (createPath (tilesPath ++ "/" ++ (show (level x))))) p)
+        --image <- resizeImage (right $ levelBounds $ head p) (bottom $ levelBounds $ head p) image
+        sequence (map (\x -> (createPath (tilesPath ++ "/" ++ (show (level x))))) p ++ map (\x -> (saveJpegFile 95 (tilesPath ++ "/" ++ (show (level x)) ++ "/0_0.jpg") image)) p)
         --image <- resizeImage (right snd head p) (bottom snd head p) image
-        --saveJpegFile 95 (tilesPath ++ (show fst p)) image
     -- Write descriptor
     --writeFile descriptorFileName (descriptorXML width height tileSize tileOverlap tileFormat)
     putStrLn "Done."
