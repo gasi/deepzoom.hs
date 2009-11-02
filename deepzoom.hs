@@ -8,9 +8,13 @@ data Rectangle = Rectangle (Int, Int, Int, Int)
 instance Show Rectangle
    where show (Rectangle (l, t, r, b)) = "(" ++ show l ++ ", " ++ show t ++ ", " ++ show (r - l) ++ ", " ++ show (b - t) ++ ")"
 
---tiles :: Rectangle -> Int -> Int -> [Rectangle]
-tiles bounds size overlap = map (\x -> rows x size overlap) cs
+tiles :: Rectangle -> Int -> Int -> [Rectangle]
+tiles bounds size overlap = flatten (map (\x -> rows x size overlap) cs)
     where cs = columns bounds size overlap
+
+flatten :: [[a]] -> [a]
+flatten [] = []
+flatten (y:ys) = y ++ (flatten ys)
 
 columns :: Rectangle -> Int -> Int -> [Rectangle]
 columns (Rectangle (left, _, right, _)) _ _
@@ -58,8 +62,8 @@ getTop (Rectangle (_, y, _, _)) = y
 
 main = do
     --putStrLn $ show $ levels input
-    putStrLn $ show $ {-length $-} columns input tileSize tileOverlap
+    putStrLn $ show $ {-length $-} tiles input tileSize tileOverlap
     putStrLn "Done."
-        where input = Rectangle (0, 0, 750, 750)
-              tileSize = 250
-              tileOverlap = 0
+        where input = Rectangle (0, 0, 600, 500)
+              tileSize = 254
+              tileOverlap = 1
