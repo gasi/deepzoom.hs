@@ -5,6 +5,10 @@ import Data.Char
 data Rectangle = Rectangle (Int, Int, Int, Int)
                  deriving (Eq, Show)
 
+--instance (Show a) => Show (Rectangle (a))
+--   where show (Rectangle (l, t, r, b)) = "[" ++ show l ++ ", " ++ show t ++ ", " show (r - l) ++ ", " show (b - t) ++ "]"
+
+
 tiles :: Rectangle -> Int -> Int -> [Rectangle]
 tiles bounds size overlap = r cs size overlap
     where cs = columns bounds size overlap
@@ -17,15 +21,11 @@ columns :: Rectangle -> Int -> Int -> [Rectangle]
 columns (Rectangle (left, _, right, _)) _ _
     | width <= 0 = []
     where width = right - left
-columns bounds size overlap = [firstBounds] ++ (columns secondBounds size overlap)
+columns (Rectangle (left, top, right, bottom)) size overlap = [firstBounds] ++ (columns secondBounds size overlap)
     where firstLeft    = max 0 (left - overlap)
           firstRight   = min right (left + size + overlap)
           secondLeft   = firstRight
           secondRight  = right
-          left         = getLeft bounds
-          top          = getTop bounds
-          right        = getRight bounds
-          bottom       = getBottom bounds
           firstBounds  = Rectangle (firstLeft, top, firstRight, bottom)
           secondBounds = Rectangle (secondLeft, top, secondRight, bottom)
 
@@ -33,15 +33,11 @@ rows :: Rectangle -> Int -> Int -> [Rectangle]
 rows (Rectangle (_, top, _, bottom)) _ _
   | height <= 0 = []
   where height = bottom - top
-rows bounds size overlap = [firstBounds] ++ (columns secondBounds size overlap)
+rows (Rectangle (left, top, right, bottom)) size overlap = [firstBounds] ++ (columns secondBounds size overlap)
   where firstTop     = max 0 (top - overlap)
         firstBottom  = min bottom (top + size + overlap)
         secondTop    = firstBottom
         secondBottom = bottom
-        left         = getLeft bounds
-        top          = getTop bounds
-        right        = getRight bounds
-        bottom       = getBottom bounds
         firstBounds  = Rectangle (left, firstTop, right, firstBottom)
         secondBounds = Rectangle (left, secondTop, right, secondBottom)
 
@@ -67,8 +63,8 @@ getTop (Rectangle (_, y, _, _)) = y
 
 main = do
     --putStrLn $ show $ levels input
-    putStrLn $ show $ tiles input tileSize tileOverlap
+    putStrLn $ show $ length $ tiles input tileSize tileOverlap
     putStrLn "Done."
-        where input = Rectangle (0, 0, 10000, 10000)
-              tileSize = 254
-              tileOverlap = 1
+        where input = Rectangle (0, 0, 750, 750)
+              tileSize = 250
+              tileOverlap = 0
