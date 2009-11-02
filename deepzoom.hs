@@ -88,11 +88,10 @@ main = do
     (width, height) <- imageSize image
     -- Create tiles folder
     createPath tilesPath
-    --let numLevels = length $ ls in
-    --    putStrLn $ show numLevels
-    --    where ls = 
+    let numLevels = length $ levels (Rectangle (0, 0, width, height)) in
+        putStrLn $ show [1..numLevels]
     -- Write descriptor
-    writeFile descriptorFileName (descriptorXML width height tileSize tileOverlap tileFormat)
+    --writeFile descriptorFileName (descriptorXML width height tileSize tileOverlap tileFormat)
     putStrLn "Done."
         where input = "test.jpg"
               tileSize = 254
