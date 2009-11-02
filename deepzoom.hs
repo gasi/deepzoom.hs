@@ -9,13 +9,9 @@ data Rectangle = Rectangle (Int, Int, Int, Int)
 --   where show (Rectangle (l, t, r, b)) = "[" ++ show l ++ ", " ++ show t ++ ", " show (r - l) ++ ", " show (b - t) ++ "]"
 
 
-tiles :: Rectangle -> Int -> Int -> [Rectangle]
-tiles bounds size overlap = r cs size overlap
+--tiles :: Rectangle -> Int -> Int -> [Rectangle]
+tiles bounds size overlap = map (\x -> rows x size overlap) cs
     where cs = columns bounds size overlap
-          
-r :: [Rectangle] -> Int -> Int -> [Rectangle]
-r [] _ _ = []
-r (c:cs) size overlap = rows c size overlap ++ r cs size overlap
 
 columns :: Rectangle -> Int -> Int -> [Rectangle]
 columns (Rectangle (left, _, right, _)) _ _
@@ -33,7 +29,7 @@ rows :: Rectangle -> Int -> Int -> [Rectangle]
 rows (Rectangle (_, top, _, bottom)) _ _
   | height <= 0 = []
   where height = bottom - top
-rows (Rectangle (left, top, right, bottom)) size overlap = [firstBounds] ++ (columns secondBounds size overlap)
+rows (Rectangle (left, top, right, bottom)) size overlap = [firstBounds] ++ (rows secondBounds size overlap)
   where firstTop     = max 0 (top - overlap)
         firstBottom  = min bottom (top + size + overlap)
         secondTop    = firstBottom
@@ -63,7 +59,8 @@ getTop (Rectangle (_, y, _, _)) = y
 
 main = do
     --putStrLn $ show $ levels input
-    putStrLn $ show $ length $ tiles input tileSize tileOverlap
+    putStrLn $ show $ {-length $-} columns input tileSize tileOverlap
+    --putStrLn $ show $ rows (head (columns input tileSize tileOverlap)) tileSize tileOverlap
     putStrLn "Done."
         where input = Rectangle (0, 0, 750, 750)
               tileSize = 250
