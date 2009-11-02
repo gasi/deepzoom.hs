@@ -27,10 +27,10 @@ top (Rectangle (_, y, _, _)) = y
 levels :: Rectangle -> [Rectangle]
 levels (Rectangle (0, 0, 1, 1)) = [Rectangle (0, 0, 1, 1)]
 levels bounds = [bounds] ++ (levels (Rectangle (0, 0, newWidth, newHeight)))
-where newWidth = ceiling $ (fromIntegral width) / 2
-  newHeight = ceiling $ (fromIntegral height) / 2
-  width = right bounds
-  height = bottom bounds
+    where newWidth = ceiling $ (fromIntegral width) / 2
+          newHeight = ceiling $ (fromIntegral height) / 2
+          width = right bounds
+          height = bottom bounds
   
 tiles :: Rectangle -> Int -> Int -> [Rectangle]
 tiles bounds size overlap = flatten (map (\x -> rows x size overlap) cs)
@@ -63,10 +63,10 @@ rows (Rectangle (left, top, right, bottom)) size overlap = [firstBounds] ++ (row
 -- Create Deep Zoom XML manifest
 descriptorXML :: Int -> Int -> Int -> Int -> String -> String
 descriptorXML width height tileSize tileOverlap tileFormat = 
-    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" ++
-    "<Image Format=\"" ++ tileFormat ++ "\" Overlap=\"" ++ show tileOverlap ++ "\" TileSize=\"" ++ show tileSize ++ "\" xmlns=\"http://schemas.microsoft.com/deepzoom/2008\">" ++
-    "<Size Height=\"" ++ show height ++ "\" Width=\"" ++ show width ++ "\"/>" ++ 
-    "</Image>"
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\
+    \<Image Format=\"" ++ tileFormat ++ "\" Overlap=\"" ++ show tileOverlap ++ "\" TileSize=\"" ++ show tileSize ++ "\" xmlns=\"http://schemas.microsoft.com/deepzoom/2008\">\
+    \<Size Height=\"" ++ show height ++ "\" Width=\"" ++ show width ++ "\"/>\
+    \</Image>"
 
 -- List helper
 flatten :: [[a]] -> [a]
@@ -81,20 +81,23 @@ createPath path = do
         then createDirectory path
         else return ()
 
+-- Main
 main = do
+    -- Load image
     image <- loadJpegFile input
     (width, height) <- imageSize image
+    -- Create tiles folder
     createPath tilesPath
+    --let numLevels = length $ ls in
+    --    putStrLn $ show numLevels
+    --    where ls = 
+    -- Write descriptor
     writeFile descriptorFileName (descriptorXML width height tileSize tileOverlap tileFormat)
-    --image <- (resizeImage 2 2 image)
-    --saveJpegFile 95 "test_files/0/0_0.jpg" image --1 "out.jpg" image
-    --putStrLn $ show $ (width, height)
-    --putStrLn $ show $ {-length $-} flatten $ map levels (tiles input tileSize tileOverlap)
     putStrLn "Done."
-        where tileSize = 254
+        where input = "test.jpg"
+              tileSize = 254
               tileOverlap = 3
               tileFormat = "jpg"
-              input = "test.jpg"
               baseName = dropExtension input
               tilesPath = baseName ++ "_files"
               descriptorFileName = addExtension baseName "dzi"
