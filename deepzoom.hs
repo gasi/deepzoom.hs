@@ -3,11 +3,10 @@ import Data.Char
 
 -- Rectangle (left, top, right, bottom)
 data Rectangle = Rectangle (Int, Int, Int, Int)
-                 deriving (Eq, Show)
+                 deriving (Eq)
 
---instance (Show a) => Show (Rectangle (a))
---   where show (Rectangle (l, t, r, b)) = "[" ++ show l ++ ", " ++ show t ++ ", " show (r - l) ++ ", " show (b - t) ++ "]"
-
+instance Show Rectangle
+   where show (Rectangle (l, t, r, b)) = "(" ++ show l ++ ", " ++ show t ++ ", " ++ show (r - l) ++ ", " ++ show (b - t) ++ ")"
 
 --tiles :: Rectangle -> Int -> Int -> [Rectangle]
 tiles bounds size overlap = map (\x -> rows x size overlap) cs
@@ -60,7 +59,6 @@ getTop (Rectangle (_, y, _, _)) = y
 main = do
     --putStrLn $ show $ levels input
     putStrLn $ show $ {-length $-} columns input tileSize tileOverlap
-    --putStrLn $ show $ rows (head (columns input tileSize tileOverlap)) tileSize tileOverlap
     putStrLn "Done."
         where input = Rectangle (0, 0, 750, 750)
               tileSize = 250
