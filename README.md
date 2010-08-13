@@ -10,3 +10,7 @@ DZI files can be rendered using any of the following software:
  - [Microsoft Live Labs Pivot](http://getpivot.com/)
  - [Microsoft Live Labs Pivot Silverlight Control](http://getpivot.com/silverlight/)
  - [OpenZoom](http://openzoom.org)
+
+Status
+------
+The library is not finished and contributions are welcome!
