@@ -62,12 +62,15 @@ rows (Rectangle (left, top, right, bottom)) size overlap = [firstBounds] ++ (row
 
 -- Deep Zoom XML manifest
 descriptorXML :: Int -> Int -> Int -> Int -> String -> String
-descriptorXML width height tileSize tileOverlap tileFormat = 
-    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\
-    \<Image Format=\"" ++ tileFormat ++ "\" Overlap=\"" ++ show tileOverlap ++ "\" TileSize=\"" ++ show tileSize ++ "\" xmlns=\"http://schemas.microsoft.com/deepzoom/2008\">\
-    \<Size Height=\"" ++ show height ++ "\" Width=\"" ++ show width ++ "\"/>\
-    \</Image>"
-    
+descriptorXML width height tileSize tileOverlap tileFormat =
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" ++
+    "<Image Format=\"" ++ tileFormat ++
+        "\" Overlap=\"" ++ show tileOverlap ++
+        "\" TileSize=\"" ++ show tileSize ++
+        "\" xmlns=\"http://schemas.microsoft.com/deepzoom/2008\">\n" ++
+    "    <Size Height=\"" ++ show height ++ "\" Width=\"" ++ show width ++ "\"/>\n" ++
+    "</Image>\n"
+
 
 pyramid :: Rectangle -> Int -> Int -> [(Int, Rectangle, [Rectangle])]
 pyramid bounds tileSize tileOverlap = zip3 (reverse [0..maxLevel]) levelBounds tileBounds
