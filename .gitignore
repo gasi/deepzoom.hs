@@ -1,1 +1,9 @@
 .DS_Store
+
+# Haskell
+deepzoom
+*.hi
+*.o
+
+# Test
+*.dzi
