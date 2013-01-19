@@ -1,6 +1,7 @@
-Haskell Deep Zoom Tools
-=======================
-Convert images into the Microsoft Deep Zoom Image (DZI) file format using Haskell.
+# Haskell Deep Zoom Tools
+
+Convert images into the Microsoft Deep Zoom Image (DZI) file format using
+Haskell.
 
 DZI files can be rendered using any of the following software:
 
