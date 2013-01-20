@@ -8,7 +8,12 @@ data Rectangle = Rectangle (Int, Int, Int, Int)
                  deriving (Eq)
 
 instance Show Rectangle
-   where show (Rectangle (l, t, r, b)) = "(" ++ show l ++ ", " ++ show t ++ ", " ++ show (r - l) ++ ", " ++ show (b - t) ++ ")"
+   where show (Rectangle (l, t, r, b)) = "(" ++
+                                            show l ++ ", " ++
+                                            show t ++ ", " ++
+                                            show (r - l) ++ ", " ++
+                                            show (b - t) ++
+                                         ")"
 
 right :: Rectangle -> Int
 right (Rectangle (_, _, width, _)) = width
