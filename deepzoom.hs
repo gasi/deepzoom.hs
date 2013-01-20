@@ -40,28 +40,26 @@ levels bounds = [bounds] ++ levels (Bounds 0 0 w h)
           lowerLevel x = ceiling $ (fromIntegral x) / 2
 
 columns :: Bounds -> Int -> Int -> [Bounds]
-columns (Bounds l _ r _) _ _
-    | w <= 0 = []
-    where w = r - l
+columns b _ _
+    | width b <= 0 = []
 columns (Bounds l t r b) size overlap = [x] ++ (columns xs size overlap)
-    where l'  = max 0 (l - overlap)
-          r'  = min r (l + size + overlap)
-          l'' = min r (l + size)
-          r'' = r
-          x  = Bounds l' t r' b
-          xs = Bounds l'' t r'' b
+    where xl  = max 0 (l - overlap)
+          xr  = min r (l + size + overlap)
+          xsl = min r (l + size)
+          xsb = r
+          x   = Bounds xl t xr b
+          xs  = Bounds xsl t xsb b
 
 rows :: Bounds -> Int -> Int -> [Bounds]
-rows (Bounds _ top _ bottom) _ _
-  | height <= 0 = []
-  where height = bottom - top
-rows (Bounds left top right bottom) size overlap = [firstBounds] ++ (rows secondBounds size overlap)
-  where firstTop     = max 0 (top - overlap)
-        firstBottom  = min bottom (top + size + overlap)
-        secondTop    = min bottom (top + size)
-        secondBottom = bottom
-        firstBounds  = Bounds left firstTop right firstBottom
-        secondBounds = Bounds left secondTop right secondBottom
+rows b _ _
+  | height b <= 0 = []
+rows (Bounds l t r b) size overlap = [x] ++ (rows xs size overlap)
+  where xl  = max 0 (t - overlap)
+        xb  = min b (t + size + overlap)
+        xst = min b (t + size)
+        xsb = b
+        x   = Bounds l xl r xb
+        xs  = Bounds l xst r xsb
 
 tiles :: Bounds -> Int -> Int -> [Bounds]
 tiles bounds size overlap = concat (map (\x -> rows x size overlap) cs)
