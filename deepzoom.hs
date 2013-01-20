@@ -1,69 +1,69 @@
 import Graphics.GD
+
 import System.Directory
+import System.Environment
 import System.FilePath
 import System.IO
 
--- Rectangle (left, top, right, bottom)
-data Rectangle = Rectangle (Int, Int, Int, Int)
-                 deriving (Eq)
 
-instance Show Rectangle
-   where show (Rectangle (l, t, r, b)) = "(" ++
-                                            show l ++ ", " ++
-                                            show t ++ ", " ++
-                                            show (r - l) ++ ", " ++
-                                            show (b - t) ++
-                                         ")"
 
-right :: Rectangle -> Int
-right (Rectangle (_, _, width, _)) = width
+data Bounds = Bounds {
+              left :: Int,
+              top :: Int,
+              right :: Int,
+              bottom :: Int
+            } deriving (Eq, Generic, Show)
 
-bottom :: Rectangle -> Int
-bottom (Rectangle (_, _, _, height)) = height
 
-left :: Rectangle -> Int
-left (Rectangle (x, _, _, _)) = x
+width :: Bounds -> Int
+width r =  (right r) - (left r)
 
-top :: Rectangle -> Int
-top (Rectangle (_, y, _, _)) = y
+height :: Bounds -> Int
+height r =  (bottom r) - (top r)
 
 
 -- Image pyramid
-levels :: Rectangle -> [Rectangle]
-levels (Rectangle (0, 0, 1, 1)) = [Rectangle (0, 0, 1, 1)]
-levels bounds = [bounds] ++ (levels (Rectangle (0, 0, newWidth, newHeight)))
-    where newWidth = ceiling $ (fromIntegral width) / 2
-          newHeight = ceiling $ (fromIntegral height) / 2
-          width = right bounds
-          height = bottom bounds
-  
-tiles :: Rectangle -> Int -> Int -> [Rectangle]
-tiles bounds size overlap = flatten (map (\x -> rows x size overlap) cs)
-    where cs = columns bounds size overlap
+levels :: Bounds -> [Bounds]
+levels (Bounds 0 0 1 1) = [Bounds 0 0 1 1]
+levels bounds = [bounds] ++ levels (Bounds 0 0 w h)
+    where w = lowerLevel $ width bounds
+          h = lowerLevel $ height bounds
+          lowerLevel x = ceiling $ (fromIntegral x) / 2
 
-columns :: Rectangle -> Int -> Int -> [Rectangle]
-columns (Rectangle (left, _, right, _)) _ _
-    | width <= 0 = []
-    where width = right - left
-columns (Rectangle (left, top, right, bottom)) size overlap = [firstBounds] ++ (columns secondBounds size overlap)
-    where firstLeft    = max 0 (left - overlap)
-          firstRight   = min right (left + size + overlap)
-          secondLeft   = min right (left + size)
-          secondRight  = right
-          firstBounds  = Rectangle (firstLeft, top, firstRight, bottom)
-          secondBounds = Rectangle (secondLeft, top, secondRight, bottom)
+columns :: Bounds -> Int -> Int -> [Bounds]
+columns (Bounds l _ r _) _ _
+    | w <= 0 = []
+    where w = r - l
+columns (Bounds l t r b) size overlap = [x] ++ (columns xs size overlap)
+    where l'  = max 0 (l - overlap)
+          r'  = min r (l + size + overlap)
+          l'' = min r (l + size)
+          r'' = r
+          x  = Bounds l' t r' b
+          xs = Bounds l'' t r'' b
 
-rows :: Rectangle -> Int -> Int -> [Rectangle]
-rows (Rectangle (_, top, _, bottom)) _ _
+rows :: Bounds -> Int -> Int -> [Bounds]
+rows (Bounds _ top _ bottom) _ _
   | height <= 0 = []
   where height = bottom - top
-rows (Rectangle (left, top, right, bottom)) size overlap = [firstBounds] ++ (rows secondBounds size overlap)
+rows (Bounds left top right bottom) size overlap = [firstBounds] ++ (rows secondBounds size overlap)
   where firstTop     = max 0 (top - overlap)
         firstBottom  = min bottom (top + size + overlap)
         secondTop    = min bottom (top + size)
         secondBottom = bottom
-        firstBounds  = Rectangle (left, firstTop, right, firstBottom)
-        secondBounds = Rectangle (left, secondTop, right, secondBottom)
+        firstBounds  = Bounds left firstTop right firstBottom
+        secondBounds = Bounds left secondTop right secondBottom
+
+tiles :: Bounds -> Int -> Int -> [Bounds]
+tiles bounds size overlap = concat (map (\x -> rows x size overlap) cs)
+    where cs = columns bounds size overlap
+
+pyramid :: Bounds -> Int -> Int -> [(Int, Bounds, [Bounds])]
+pyramid bounds tileSize tileOverlap = zip3 (reverse [0..maxLevel]) levelBounds tileBounds
+    where numLevels = length levelBounds
+          maxLevel = numLevels - 1
+          levelBounds = levels (Bounds 0 0 (right bounds) (bottom bounds))
+          tileBounds = map (\x -> tiles x tileSize tileOverlap) levelBounds
 
 -- Deep Zoom XML manifest
 descriptorXML :: Int -> Int -> Int -> Int -> String -> String
@@ -76,52 +76,18 @@ descriptorXML width height tileSize tileOverlap tileFormat =
     "    <Size Height=\"" ++ show height ++ "\" Width=\"" ++ show width ++ "\"/>\n" ++
     "</Image>\n"
 
-
-pyramid :: Rectangle -> Int -> Int -> [(Int, Rectangle, [Rectangle])]
-pyramid bounds tileSize tileOverlap = zip3 (reverse [0..maxLevel]) levelBounds tileBounds
-    where numLevels = length levelBounds
-          maxLevel = numLevels - 1
-          levelBounds = levels (Rectangle (0, 0, right bounds, bottom bounds))
-          tileBounds = map (\x -> tiles x tileSize tileOverlap) levelBounds
-
-
--- List helper
-flatten :: [[a]] -> [a]
-flatten [] = []
-flatten (y:ys) = y ++ (flatten ys)
-
--- Create path if does not exist
-createPath :: String -> IO ()
-createPath path = do
-    result <- doesDirectoryExist path
-    if not result
-        then createDirectory path
-        else return ()
-
 level (l, _, _) = l
 levelBounds (_, b, _) = b
 
-sequence_ :: [IO ()] -> IO ()
-sequence_ =  foldr (>>) (return ())
 
 -- Main
+main :: IO ()
 main = do
-    -- Load image
-    image <- loadJpegFile input
-    (width, height) <- imageSize image
-    -- Create tiles folder
-    createPath tilesPath
-    let p = (pyramid (Rectangle (0, 0, width, height)) tileSize tileOverlap) in
-        --image <- resizeImage (right $ levelBounds $ head p) (bottom $ levelBounds $ head p) image
-        sequence (map (\x -> (createPath (tilesPath ++ "/" ++ (show (level x))))) p ++ map (\x -> (saveJpegFile 95 (tilesPath ++ "/" ++ (show (level x)) ++ "/0_0.jpg") image)) p)
-        --image <- resizeImage (right snd head p) (bottom snd head p) image
-    -- Write descriptor
-    --writeFile descriptorFileName (descriptorXML width height tileSize tileOverlap tileFormat)
-    putStrLn "Done."
-        where input = "test.jpg"
-              tileSize = 254
-              tileOverlap = 3
-              tileFormat = "jpg"
-              baseName = dropExtension input
-              tilesPath = baseName ++ "_files"
-              descriptorFileName = addExtension baseName "dzi"
+    [source, destination] <- getArgs
+    image <- loadJpegFile source
+    (w, h) <- imageSize image
+    let tileSize = 254
+    let tileOverlap = 3
+    putStrLn $ show $ levels (Bounds 0 0 w h)
+    putStrLn $ show $ tiles (Bounds 0 0 w h) tileSize tileOverlap
+    putStrLn $ show $ pyramid (Bounds 0 0 w h) tileSize tileOverlap
