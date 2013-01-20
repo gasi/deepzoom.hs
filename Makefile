@@ -1,5 +1,5 @@
 build:
-	@ghc deepzoom.hs
+	@ghc deepzoom.hs -XDeriveGeneric
 
 install:
 	cabal install --extra-lib-dirs=/usr/X11/lib/ \

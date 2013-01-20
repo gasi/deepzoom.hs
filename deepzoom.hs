@@ -1,3 +1,11 @@
+import Data.Aeson (FromJSON, ToJSON, decode, encode)
+import qualified Data.ByteString.Lazy.Char8 as BL
+
+-- To decode or encode a value using the generic machinery, we must
+-- make the type an instance of the Generic class.
+
+import GHC.Generics (Generic)
+
 import Graphics.GD
 
 import System.Directory
@@ -14,6 +22,7 @@ data Bounds = Bounds {
               bottom :: Int
             } deriving (Eq, Generic, Show)
 
+instance ToJSON Bounds
 
 width :: Bounds -> Int
 width r =  (right r) - (left r)
@@ -88,6 +97,6 @@ main = do
     (w, h) <- imageSize image
     let tileSize = 254
     let tileOverlap = 3
-    putStrLn $ show $ levels (Bounds 0 0 w h)
-    putStrLn $ show $ tiles (Bounds 0 0 w h) tileSize tileOverlap
-    putStrLn $ show $ pyramid (Bounds 0 0 w h) tileSize tileOverlap
+    BL.putStrLn $ encode $ levels (Bounds 0 0 w h)
+    BL.putStrLn $ encode $ tiles (Bounds 0 0 w h) tileSize tileOverlap
+    BL.putStrLn $ encode $ pyramid (Bounds 0 0 w h) tileSize tileOverlap
