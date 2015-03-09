@@ -1,6 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
 
-import Data.Aeson (FromJSON, ToJSON, decode, encode)
+import Data.Aeson (ToJSON, encode)
 import qualified Data.ByteString.Lazy.Char8 as BL
 
 -- To decode or encode a value using the generic machinery, we must
