@@ -1,5 +1,17 @@
 {-# LANGUAGE DeriveGeneric #-}
 
+module DeepZoom
+( Bounds(Bounds)
+, columns
+, descriptorXML
+, level
+, levelBounds
+, levels
+, pyramid
+, rows
+, tiles
+) where
+
 import Data.Aeson (ToJSON)
 import GHC.Generics (Generic)
 
