@@ -10,11 +10,7 @@ import GHC.Generics (Generic)
 
 import Graphics.GD
 
-import System.Directory
 import System.Environment
-import System.FilePath
-import System.IO
-
 
 
 data Bounds = Bounds {
