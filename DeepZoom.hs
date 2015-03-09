@@ -1,16 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 
-import Data.Aeson (ToJSON, encode)
-import qualified Data.ByteString.Lazy.Char8 as BL
-
--- To decode or encode a value using the generic machinery, we must
--- make the type an instance of the Generic class.
-
+import Data.Aeson (ToJSON)
 import GHC.Generics (Generic)
-
-import Graphics.GD
-
-import System.Environment
 
 
 data Bounds = Bounds {
