@@ -23,24 +23,24 @@ data Bounds = Bounds {
 instance ToJSON Bounds
 
 width :: Bounds -> Int
-width r =  (right r) - (left r)
+width r =  right r - left r
 
 height :: Bounds -> Int
-height r =  (bottom r) - (top r)
+height r =  bottom r - top r
 
 
 -- Image pyramid
 levels :: Bounds -> [Bounds]
 levels (Bounds 0 0 1 1) = [Bounds 0 0 1 1]
-levels bounds = [bounds] ++ levels (Bounds 0 0 w h)
-    where w = lowerLevel $ width bounds
-          h = lowerLevel $ height bounds
-          lowerLevel x = ceiling $ (fromIntegral x) / 2
+levels bounds = bounds : levels (Bounds 0 0 w h)
+  where w = lowerLevel $ width bounds
+        h = lowerLevel $ height bounds
+        lowerLevel x = ceiling $ fromIntegral x / 2
 
 columns :: Bounds -> Int -> Int -> [Bounds]
 columns b _ _
     | width b <= 0 = []
-columns (Bounds l t r b) size overlap = [x] ++ (columns xs size overlap)
+columns (Bounds l t r b) size overlap = x : columns xs size overlap
     where xl  = max 0 (l - overlap)
           xr  = min r (l + size + overlap)
           xsl = min r (l + size)
@@ -51,7 +51,7 @@ columns (Bounds l t r b) size overlap = [x] ++ (columns xs size overlap)
 rows :: Bounds -> Int -> Int -> [Bounds]
 rows b _ _
   | height b <= 0 = []
-rows (Bounds l t r b) size overlap = [x] ++ (rows xs size overlap)
+rows (Bounds l t r b) size overlap = x : rows xs size overlap
   where xl  = max 0 (t - overlap)
         xb  = min b (t + size + overlap)
         xst = min b (t + size)
@@ -60,7 +60,7 @@ rows (Bounds l t r b) size overlap = [x] ++ (rows xs size overlap)
         xs  = Bounds l xst r xsb
 
 tiles :: Bounds -> Int -> Int -> [Bounds]
-tiles bounds size overlap = concat (map (\x -> rows x size overlap) cs)
+tiles bounds size overlap = concatMap (\x -> rows x size overlap) cs
     where cs = columns bounds size overlap
 
 pyramid :: Bounds -> Int -> Int -> [(Int, Bounds, [Bounds])]
