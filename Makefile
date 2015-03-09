@@ -3,7 +3,7 @@ build:
 
 install:
 	cabal install --extra-lib-dirs=/usr/X11/lib/ \
-                  --extra-include-dirs=/usr/X11/include/ gd
+		--extra-include-dirs=/usr/X11/include/ gd
 
 run: build
 	@./deepzoom test.jpg test.dzi
