@@ -83,16 +83,3 @@ descriptorXML width height tileSize tileOverlap tileFormat =
 
 level (l, _, _) = l
 levelBounds (_, b, _) = b
-
-
--- Main
-main :: IO ()
-main = do
-    [source, destination] <- getArgs
-    image <- loadJpegFile source
-    (w, h) <- imageSize image
-    let tileSize = 254
-    let tileOverlap = 3
-    BL.putStrLn $ encode $ levels (Bounds 0 0 w h)
-    BL.putStrLn $ encode $ tiles (Bounds 0 0 w h) tileSize tileOverlap
-    BL.putStrLn $ encode $ pyramid (Bounds 0 0 w h) tileSize tileOverlap
