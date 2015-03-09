@@ -75,9 +75,9 @@ descriptorXML :: Int -> Int -> Int -> Int -> String -> String
 descriptorXML width height tileSize tileOverlap tileFormat =
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" ++
     "<Image Format=\"" ++ tileFormat ++
-        "\" Overlap=\"" ++ show tileOverlap ++
-        "\" TileSize=\"" ++ show tileSize ++
-        "\" xmlns=\"http://schemas.microsoft.com/deepzoom/2008\">\n" ++
+    "    \" Overlap=\"" ++ show tileOverlap ++
+    "    \" TileSize=\"" ++ show tileSize ++
+    "    \" xmlns=\"http://schemas.microsoft.com/deepzoom/2008\">\n" ++
     "    <Size Height=\"" ++ show height ++ "\" Width=\"" ++ show width ++ "\"/>\n" ++
     "</Image>\n"
 
