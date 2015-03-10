@@ -4,12 +4,14 @@ module DeepZoom
 ( Bounds(Bounds)
 , columns
 , descriptorXML
+, height
 , level
 , levelBounds
 , levels
 , pyramid
 , rows
 , tiles
+, width
 ) where
 
 import Data.Aeson (ToJSON)
