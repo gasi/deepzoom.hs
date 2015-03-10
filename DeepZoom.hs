@@ -73,6 +73,12 @@ pyramid bounds tileSize tileOverlap = zip3 (reverse [0..maxLevel]) levelBounds t
           levelBounds = levels (Bounds 0 0 (right bounds) (bottom bounds))
           tileBounds = map (\x -> tiles x tileSize tileOverlap) levelBounds
 
+level :: (Int, Bounds, [Bounds]) -> Int
+level (l, _, _) = l
+
+levelBounds :: (Int, Bounds, [Bounds]) -> Bounds
+levelBounds (_, b, _) = b
+
 -- Deep Zoom XML manifest
 descriptorXML :: Int -> Int -> Int -> Int -> String -> String
 descriptorXML width height tileSize tileOverlap tileFormat =
@@ -83,6 +89,3 @@ descriptorXML width height tileSize tileOverlap tileFormat =
     "    \" xmlns=\"http://schemas.microsoft.com/deepzoom/2008\">\n" ++
     "    <Size Height=\"" ++ show height ++ "\" Width=\"" ++ show width ++ "\"/>\n" ++
     "</Image>\n"
-
-level (l, _, _) = l
-levelBounds (_, b, _) = b
