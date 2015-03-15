@@ -39,12 +39,12 @@ mkPyramid = Pyramid
 descriptorXml :: Pyramid -> String
 descriptorXml (Pyramid width height tileSize tileOverlap tileFormat) =
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" ++
-    "<Image xmlns=\"http://schemas.microsoft.com/deepzoom/2008\"\n" ++
-    "       Format=\"" ++ show tileFormat ++ "\"\n" ++
-    "       Overlap=\"" ++ show tileOverlap ++ "\"\n" ++
-    "       TileSize=\"" ++ show tileSize ++ "\">\n" ++
-    "    <Size Height=\"" ++ show height ++
-           "\" Width=\"" ++ show width ++ "\"/>\n" ++
+    "<Image xmlns=\"http://schemas.microsoft.com/deepzoom/2008\"" ++
+          " Format=\"" ++ show tileFormat ++ "\"" ++
+          " Overlap=\"" ++ show tileOverlap ++ "\"" ++
+          " TileSize=\"" ++ show tileSize ++ "\">\n" ++
+    "  <Size Height=\"" ++ show height ++
+         "\" Width=\"" ++ show width ++ "\"/>\n" ++
     "</Image>\n"
 
 savePyramid :: Pyramid
