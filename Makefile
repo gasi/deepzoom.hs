@@ -12,7 +12,7 @@ clean:
 	@-rm -f *.hi
 	@-rm -f *.o
 	@-rm -f deepzoom
-	@-rm -rf test_files
-	@-rm -f test.dzi
+	@-rm -rf *_files
+	@-rm -f *.dzi
 
 .PHONY: build install run clean
