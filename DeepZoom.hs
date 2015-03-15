@@ -33,8 +33,7 @@ mkPyramid :: Int -- ^ width
           -> Int -- ^ tile overlap
           -> TileFormat -- ^ tile format
           -> Pyramid
-mkPyramid width height tileSize tileOverlap tileFormat =
-    Pyramid width height tileSize tileOverlap tileFormat
+mkPyramid = Pyramid
 
 -- | Returns the descriptor XML of a 'Pyramid'.
 descriptorXml :: Pyramid -> String
@@ -51,6 +50,5 @@ descriptorXml (Pyramid width height tileSize tileOverlap tileFormat) =
 savePyramid :: Pyramid
             -> FilePath -- ^ Destination of `.dzi` file.
             -> IO ()
-savePyramid pyramid destination = do
-    writeFile destination xml
+savePyramid pyramid destination = writeFile destination xml
         where xml = descriptorXml pyramid
