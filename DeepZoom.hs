@@ -42,13 +42,17 @@ data Level = Level
     , levelHeight :: Int
     } deriving (Eq, Show)
 
--- | Returns the levels of the 'Pyramid'.
+-- | Returns the levels of the 'Pyramid', from lowest (smallest)
+-- to highest (largest).
 pyramidLevels :: Pyramid -> [Level]
-pyramidLevels (Pyramid 1 1 _ _ _) = [Level 1 1]
-pyramidLevels (Pyramid w h tileSize tileOverlap tileFormat) =
+pyramidLevels = reverse . pyramidLevels'
+
+pyramidLevels' :: Pyramid -> [Level]
+pyramidLevels' (Pyramid 1 1 _ _ _) = [Level 1 1]
+pyramidLevels' (Pyramid w h tileSize tileOverlap tileFormat) =
     Level w h : nextLevels (Pyramid w h tileSize tileOverlap tileFormat)
     where
-        nextLevels = pyramidLevels . nextPyramid
+        nextLevels = pyramidLevels' . nextPyramid
         next n = ceiling $ fromIntegral n / 2
         nextPyramid (Pyramid w h tileSize tileOverlap tileFormat) =
             Pyramid (next w) (next h) tileSize tileOverlap tileFormat
