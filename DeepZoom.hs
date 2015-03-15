@@ -42,6 +42,17 @@ data Level = Level
     , levelHeight :: Int
     } deriving (Eq, Show)
 
+-- | Returns the levels of the 'Pyramid'.
+pyramidLevels :: Pyramid -> [Level]
+pyramidLevels (Pyramid 1 1 _ _ _) = [Level 1 1]
+pyramidLevels (Pyramid w h tileSize tileOverlap tileFormat) =
+    Level w h : nextLevels (Pyramid w h tileSize tileOverlap tileFormat)
+    where
+        nextLevels = pyramidLevels . nextPyramid
+        next n = ceiling $ fromIntegral n / 2
+        nextPyramid (Pyramid w h tileSize tileOverlap tileFormat) =
+            Pyramid (next w) (next h) tileSize tileOverlap tileFormat
+
 -- | Returns the descriptor XML of a 'Pyramid'.
 descriptorXml :: Pyramid -> String
 descriptorXml (Pyramid width height tileSize tileOverlap tileFormat) =
