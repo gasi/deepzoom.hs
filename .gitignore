@@ -5,6 +5,11 @@ deepzoom
 *.hi
 *.o
 
+# Cabal
+/dist/
+/cabal.sandbox.config
+/.cabal-sandbox/
+
 # DZIs
 /*.dzi
 /*_files/
