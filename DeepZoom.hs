@@ -1,5 +1,6 @@
 module DeepZoom
 ( descriptorXml
+, Level
 , mkPyramid
 , Pyramid
 , pyramidHeight
@@ -34,6 +35,12 @@ mkPyramid :: Int -- ^ width
           -> TileFormat -- ^ tile format
           -> Pyramid
 mkPyramid = Pyramid
+
+-- | A level of a 'Pyramid'.
+data Level = Level
+    { levelWidth :: Int
+    , levelHeight :: Int
+    } deriving (Eq, Show)
 
 -- | Returns the descriptor XML of a 'Pyramid'.
 descriptorXml :: Pyramid -> String
