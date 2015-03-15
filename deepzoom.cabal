@@ -19,7 +19,7 @@ library
   other-extensions:    DeriveGeneric
   build-depends:
       base >=4.7 && <4.8
-    , gd >= 3000.7.3 && < 4000.0
+    , gd == 3000.7.3
 
 source-repository head
   type: git
