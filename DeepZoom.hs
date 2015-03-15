@@ -12,6 +12,9 @@ module DeepZoom
 , TileFormat(..)
 ) where
 
+import System.Directory
+import System.FilePath
+
 -- | The tile file format.
 data TileFormat = PNG | JPEG deriving (Eq)
 
@@ -69,8 +72,18 @@ descriptorXml (Pyramid width height tileSize tileOverlap tileFormat) =
          "\" Width=\"" ++ show width ++ "\"/>\n" ++
     "</Image>\n"
 
+-- | Returns path to the tiles folder.
+tilesPath :: FilePath -> FilePath
+tilesPath p = (fst . splitExtension) p ++ "_files"
+
+-- | Write 'Pyramid' tiles and descriptor XML to disk.
 savePyramid :: Pyramid
-            -> FilePath -- ^ Destination of `.dzi` file.
+            -> FilePath -- ^ Path to DZI file.
             -> IO ()
-savePyramid pyramid destination = writeFile destination xml
-        where xml = descriptorXml pyramid
+savePyramid pyramid dzi = do
+        mapM (\fp -> createDirectoryIfMissing True fp) folderPaths
+        writeFile dzi xml
+        where
+            levels = zip [0..] (pyramidLevels pyramid)
+            folderPaths = map (\(l, _) -> tilesPath dzi ++ "/" ++ show l) levels
+            xml = descriptorXml pyramid
