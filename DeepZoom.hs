@@ -81,7 +81,7 @@ savePyramid :: Pyramid
             -> FilePath -- ^ Path to DZI file.
             -> IO ()
 savePyramid pyramid dzi = do
-        mapM (\fp -> createDirectoryIfMissing True fp) folderPaths
+        mapM (createDirectoryIfMissing True) folderPaths
         writeFile dzi xml
         where
             levels = zip [0..] (pyramidLevels pyramid)
